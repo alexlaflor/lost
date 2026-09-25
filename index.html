@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LOST · Maratona</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   CONFIGURAÇÃO — edite aqui
+   ============================================================ */
+</style>
+<script>
+  // Participantes da maratona (pode adicionar mais nomes depois)
+  const PARTICIPANTS = ["Alex", "Kevin", "Vitor"];
+
+  // URL do Realtime Database do Firebase (veja o README).
+  // Deixe vazio para usar só neste aparelho (sem compartilhar).
+  const FIREBASE_DB_URL = "";
+</script>
+<style>
+:root{
+  --ocean:#0B3C5D; --ocean-2:#12507A; --sky:#EEF4F7; --paper:#FFFFFF;
+  --red:#C8102E; --sand:#E3D3A8; --jungle:#2F5D3A; --ink:#172630; --muted:#5E7382; --line:#D5E0E6;
+  --display:"Barlow Condensed", "Arial Narrow", Arial, sans-serif;
+  --serif:"Source Serif 4", Georgia, "Times New Roman", serif;
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px)}
+body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--display);font-size:17px;-webkit-font-smoothing:antialiased}
+button,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+
+/* Hero */
+header.hero{background:var(--ocean);color:#fff;position:relative;overflow:hidden}
+header.hero .wrap{padding-top:28px;padding-bottom:22px;position:relative}
+.wordmark{font-weight:800;font-size:clamp(72px,18vw,150px);letter-spacing:.14em;line-height:.9;margin:0}
+.flight{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-weight:600;font-size:18px;color:#BFD4E2}
+.flight b{color:#fff;font-weight:700}
+.numbers{position:absolute;right:16px;top:30px;font-weight:700;color:var(--sand);letter-spacing:.2em;font-size:15px}
+.stripe{height:6px;background:linear-gradient(90deg,var(--red) 0 33%,var(--ocean-2) 33% 66%,var(--sand) 66%)}
+
+.who{margin-top:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.who span{color:#BFD4E2;font-weight:600}
+.seg{display:inline-flex;background:rgba(255,255,255,.1);border-radius:999px;padding:3px}
+.seg button{border:0;background:none;color:#fff;padding:7px 16px;border-radius:999px;font-weight:700;font-size:16px}
+.seg button[aria-pressed="true"]{background:#fff;color:var(--ocean)}
+
+/* Progresso */
+.progress{background:var(--paper);border-bottom:1px solid var(--line)}
+.progress .wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px 22px;padding-top:16px;padding-bottom:16px}
+.pbar .row{display:flex;justify-content:space-between;font-weight:700}
+.pbar .row small{color:var(--muted);font-weight:600;font-size:15px}
+.pbar .track{height:8px;background:var(--line);border-radius:4px;margin-top:5px;overflow:hidden}
+.pbar .fill{height:100%;background:var(--jungle);border-radius:4px;transition:width .4s}
+.pbar.me .fill{background:var(--red)}
+
+/* Barra de filtros */
+.toolbar{position:sticky;top:0;z-index:5;background:rgba(238,244,247,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.toolbar .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:10px;padding-bottom:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;max-width:100%}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1.5px solid var(--line);background:var(--paper);padding:5px 12px;border-radius:6px;font-weight:700;font-size:15px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ocean);border-color:var(--ocean);color:#fff}
+.opts{display:flex;gap:6px;flex-wrap:wrap;margin-left:auto}
+.opt{border:0;background:none;color:var(--ocean-2);font-weight:700;font-size:15px;padding:5px 6px;text-decoration:underline;text-underline-offset:3px}
+.opt[aria-pressed="true"]{color:var(--red)}
+
+.sync{font-size:14px;font-weight:600;color:var(--muted);padding:10px 0 0}
+.sync .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#aaa;margin-right:6px;vertical-align:1px}
+.sync.on .dot{background:#2E9E5B}
+.sync.local .dot{background:#D9A400}
+.sync.err .dot{background:var(--red)}
+
+/* Sessões = cartões de embarque */
+main{padding:18px 0 60px}
+.season-h{font-weight:800;font-size:28px;margin:30px 0 10px;color:var(--ocean);display:flex;align-items:baseline;gap:10px}
+.season-h small{font-size:16px;color:var(--muted);font-weight:600}
+.ticket{display:grid;grid-template-columns:96px 1fr;background:var(--paper);border-radius:10px;margin:0 0 14px;border:1px solid var(--line);overflow:hidden}
+.ticket.next{border:2px solid var(--red)}
+.stub{background:var(--ocean);color:#fff;padding:14px 10px;text-align:center;position:relative;border-right:2px dashed rgba(255,255,255,.0)}
+.stub::after{content:"";position:absolute;right:-1px;top:8px;bottom:8px;border-right:2px dashed var(--sky)}
+.stub .lbl{font-size:13px;color:#9EC0D6;font-weight:600}
+.stub .n{font-size:34px;font-weight:800;line-height:1}
+.stub .d{font-size:15px;font-weight:700;margin-top:8px}
+.stub .y{font-size:13px;color:#9EC0D6;font-weight:600}
+.ticket.next .stub{background:var(--red)}
+.ticket.next .stub .lbl,.ticket.next .stub .y{color:#FFD4DA}
+.eps{min-width:0}
+.ep{padding:14px 16px 16px}
+.ep + .ep{border-top:1px solid var(--line)}
+.ep-top{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.code{font-weight:700;color:var(--red);font-size:15px}
+.title{font-weight:700;font-size:22px;line-height:1.1;margin:0}
+.syn{font-family:var(--serif);font-size:16px;line-height:1.55;color:#33434E;margin:8px 0 0;max-width:68ch}
+.syn.hidden{filter:blur(5px);cursor:pointer;user-select:none}
+.syn.hidden:hover{filter:blur(4px)}
+
+.people{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:999px;padding:4px 12px 4px 8px;font-weight:700;font-size:15px;background:var(--paper)}
+.pill .box{width:16px;height:16px;border-radius:4px;border:2px solid #9FB0BB;display:grid;place-items:center;font-size:12px;line-height:1}
+.pill.seen{border-color:var(--jungle);color:var(--jungle)}
+.pill.seen .box{background:var(--jungle);border-color:var(--jungle);color:#fff}
+.pill.mine{cursor:pointer}
+.pill.mine:not(.seen){border-color:var(--ocean-2);color:var(--ocean-2)}
+.pill.mine .you{font-weight:600;color:var(--muted);font-size:13px}
+button.pill{background:var(--paper)}
+
+.comments{margin-top:10px;display:grid;gap:6px}
+.cmt{font-family:var(--serif);font-size:15px;line-height:1.45;background:var(--sky);border-radius:8px;padding:7px 10px}
+.cmt b{font-family:var(--display);font-weight:700;font-size:15px;margin-right:6px;color:var(--ocean)}
+.mycmt{width:100%;min-height:40px;resize:vertical;border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;font-family:var(--serif);font-size:15px;background:#fff;line-height:1.4}
+.mycmt:focus{border-color:var(--ocean-2);outline:none}
+.saved{font-size:13px;color:var(--jungle);font-weight:600;height:16px}
+.empty{background:var(--paper);border-radius:10px;padding:28px;text-align:center;font-weight:600;color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:14px;font-weight:600;padding:0 16px 40px}
+
+@media (max-width:520px){
+  .ticket{grid-template-columns:70px 1fr}
+  .stub .n{font-size:26px}
+  .title{font-size:20px}
+  .numbers{display:none}
+  .opts{margin-left:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="numbers" aria-hidden="true">4 8 15 16 23 42</div>
+    <h1 class="wordmark">LOST</h1>
+    <div class="flight"><span>Oceanic <b>815</b></span><span><b>121</b> episódios</span><span>quintas-feiras, 2 por semana</span><span>até <b>09/12/2027</b></span></div>
+    <div class="who"><span>Quem está marcando?</span><div class="seg" id="who" role="group" aria-label="Quem é você"></div></div>
+  </div>
+  <div class="stripe"></div>
+</header>
+
+<section class="progress" aria-label="Progresso"><div class="wrap" id="progress"></div></section>
+
+<nav class="toolbar" aria-label="Filtros">
+  <div class="wrap">
+    <div class="chips" id="seasons"></div>
+    <div class="opts">
+      <button class="opt" id="optSyn" aria-pressed="true">Sinopses visíveis</button>
+      <button class="opt" id="optTodo" aria-pressed="false">Só o que falta pra mim</button>
+      <button class="opt" id="optNext">Próxima sessão</button>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap"><div class="sync" id="sync"><span class="dot"></span><span id="syncTxt">Conectando…</span></div></div>
+<main class="wrap" id="list"></main>
+<footer>Namaste. Marque só depois de assistir.</footer>
+
+<script>
+/* ============================================================
+   EPISÓDIOS (numeração oficial da ABC)
+   ============================================================ */
+const SEASONS = {
+1:[
+["Pilot (Part 1)","O voo 815 da Oceanic se parte no ar e cai numa ilha do Pacífico. Jack socorre os feridos e, com Kate e Charlie, vai atrás do transceptor na cabine, onde algo invisível arrasta o piloto."],
+["Pilot (Part 2)","Um grupo sobe o morro para tentar mandar sinal e capta uma mensagem em francês repetida há 16 anos. No caminho, um urso polar aparece na mata."],
+["Tabula Rasa","Jack descobre que Kate era a prisioneira do marshal ferido. O marshal agoniza e o acampamento precisa decidir o que fazer com ele."],
+["Walkabout","Locke lidera a caça aos javalis e o passado dele revela um segredo sobre o que a ilha fez por ele."],
+["White Rabbit","Jack persegue a visão do pai morto pela floresta enquanto o acampamento fica sem água. Ele acaba encontrando as cavernas."],
+["House of the Rising Sun","Jin ataca Michael sem motivo aparente. O grupo se divide entre a praia e as cavernas, e o passado de Sun e Jin começa a aparecer."],
+["The Moth","Charlie luta contra a abstinência de heroína e fica preso num desmoronamento dentro das cavernas."],
+["Confidence Man","Sawyer é acusado de esconder a bombinha de asma de Shannon e é interrogado à força. Conhecemos a origem do nome dele."],
+["Solitary","Sayid segue um cabo pela praia e é capturado por Danielle Rousseau, a francesa da transmissão."],
+["Raised by Another","Claire tem pesadelos sobre alguém querendo o bebê. Hurley descobre que um dos sobreviventes não estava na lista de passageiros."],
+["All the Best Cowboys Have Daddy Issues","Charlie e Claire desaparecem. Jack e Kate seguem Ethan pela mata enquanto Locke e Boone acham algo de metal enterrado."],
+["Whatever the Case May Be","Kate e Sawyer encontram a maleta do marshal numa lagoa, e Kate faz de tudo para abri-la."],
+["Hearts and Minds","Locke leva Boone a uma experiência forte na floresta. O passado de Boone e Shannon mostra a relação complicada dos dois."],
+["Special","Michael e Walt brigam enquanto o menino se aproxima de Locke. O passado de Michael explica a distância entre pai e filho."],
+["Homecoming","Charlie volta sem memória do sequestro, e Ethan ameaça matar um sobrevivente por dia até Claire voltar."],
+["Outlaws","Sawyer caça um javali que parece persegui-lo e tem uma conversa marcante com Jack sobre o passado."],
+["...In Translation","A jangada é incendiada e Jin vira o principal suspeito. O passado dele mostra o trabalho para o pai de Sun."],
+["Numbers","Hurley investiga os números de Rousseau, os mesmos que o fizeram ganhar na loteria."],
+["Deus Ex Machina","Locke e Boone encontram um avião de traficantes preso numa árvore, e Boone sobe para usar o rádio."],
+["Do No Harm","Jack tenta salvar Boone a qualquer custo enquanto Claire entra em trabalho de parto na floresta."],
+["The Greater Good","Shannon culpa Locke pelo que aconteceu com Boone e pede ajuda a Sayid. O passado de Sayid como agente infiltrado."],
+["Born to Run","Kate disputa a última vaga na jangada e Michael adoece de repente, envenenado."],
+["Exodus (Part 1)","Rousseau avisa que os Outros estão vindo e aponta uma coluna de fumaça. A jangada fica pronta para partir."],
+["Exodus (Part 2)","A jangada zarpa. Um grupo atravessa o Território Sombrio até o navio Black Rock em busca de dinamite."],
+["Exodus (Part 3)","No mar, a jangada encontra um barco. Em terra, Jack e Locke tentam abrir a escotilha."]],
+2:[
+["Man of Science, Man of Faith","Jack, Locke e Kate descem pela escotilha e encontram um homem vivendo lá dentro: Desmond."],
+["Adrift","Michael, Sawyer e Jin tentam sobreviver no mar após a destruição da jangada. Na escotilha, Locke e Kate enfrentam Desmond."],
+["Orientation","Um filme de orientação da Iniciativa Dharma explica a estação Cisne e o botão que precisa ser apertado a cada 108 minutos."],
+["Everybody Hates Hugo","Hurley fica responsável pela despensa da escotilha e teme o que a comida vai fazer com o grupo."],
+["...And Found","Sun perde a aliança de casamento. Jin e Michael conhecem outros sobreviventes do voo."],
+["Abandoned","Os sobreviventes da cauda atravessam a ilha rumo ao acampamento, e o encontro termina em tragédia."],
+["The Other 48 Days","Os primeiros 48 dias dos sobreviventes da cauda, contados do ponto de vista deles."],
+["Collision","Ana Lucia mantém Sayid como refém. Os dois grupos finalmente se encontram."],
+["What Kate Did","Kate vê um cavalo preto na mata e o passado revela o crime que a transformou em fugitiva."],
+["The 23rd Psalm","Eko e Charlie vão até o avião dos traficantes. O passado de Eko na Nigéria explica a estátua da Virgem Maria."],
+["The Hunting Party","Michael sai sozinho atrás de Walt. Jack, Locke e Sawyer vão atrás e encontram os Outros."],
+["Fire + Water","Charlie tem sonhos estranhos sobre salvar o bebê Aaron e toma decisões que assustam Claire."],
+["The Long Con","Um ataque no acampamento leva a uma disputa pelas armas, e Sawyer mostra que ainda é um golpista."],
+["One of Them","Rousseau captura um homem que diz se chamar Henry Gale. Sayid o interroga dentro da escotilha."],
+["Maternity Leave","Claire recupera lembranças do período em que esteve sequestrada e volta ao lugar com Kate e Rousseau."],
+["The Whole Truth","Sun descobre algo que pode mudar a vida dela e de Jin. Henry Gale segue preso."],
+["Lockdown","As portas da escotilha se fecham e Locke fica preso com Henry. Um carregamento de suprimentos cai do céu."],
+["Dave","Hurley começa a ver um amigo do tempo em que esteve internado e duvida da própria sanidade."],
+["S.O.S.","Rose e Bernard discordam sobre fazer um sinal de socorro, e o passado deles explica por quê."],
+["Two for the Road","Michael reaparece exausto e com informações sobre os Outros. O passado de Ana Lucia antes do voo."],
+["?","Eko sonha com o irmão e leva Locke até um ponto de interrogação no mapa da escotilha."],
+["Three Minutes","Michael conta como foi capturado pelos Outros e organiza um resgate de Walt."],
+["Live Together, Die Alone (Part 1)","Desmond volta de barco à ilha e o passado dele explica como foi parar na escotilha."],
+["Live Together, Die Alone (Part 2)","Locke decide testar o que acontece se ninguém apertar o botão, enquanto o grupo de Michael chega ao acampamento dos Outros."]],
+3:[
+["A Tale of Two Cities","Jack, Kate e Sawyer acordam prisioneiros dos Outros. Conhecemos Juliet e a vila onde eles vivem."],
+["The Glass Ballerina","Sun, Jin e Sayid tentam um resgate de barco. Sawyer e Kate são forçados a trabalhar para os Outros."],
+["Further Instructions","Locke perde a fala e busca orientação da ilha. Desmond reaparece sem roupa na mata."],
+["Every Man for Himself","Ben usa um truque cruel para manter Sawyer sob controle. Jack descobre por que os Outros precisam dele."],
+["The Cost of Living","Eko é confrontado por visões do irmão e precisa encarar o próprio passado."],
+["I Do","Jack decide se vai operar Ben. O passado de Kate mostra um casamento que ela não conseguiu manter."],
+["Not in Portland","Kate e Sawyer tentam fugir com ajuda de Alex. O passado de Juliet em Miami revela como ela foi recrutada."],
+["Flashes Before Your Eyes","Desmond revive o próprio passado e passa a ter visões do futuro."],
+["Stranger in a Strange Land","Jack fica sozinho com os Outros e acompanha o julgamento de Juliet. O passado dele na Tailândia."],
+["Tricia Tanaka Is Dead","Hurley encontra uma Kombi da Dharma e decide consertá-la para animar o grupo."],
+["Enter 77","Sayid, Kate e Locke encontram a estação Chama e um homem que diz ser o último da Dharma."],
+["Par Avion","Claire tenta mandar uma mensagem amarrada numa ave migratória. O passado dela com a mãe e o pai."],
+["The Man from Tallahassee","Locke encontra Ben na vila, e Ben revela uma surpresa sobre o passado de Locke."],
+["Exposé","A história de Nikki e Paulo, dois sobreviventes que estavam no fundo da cena o tempo todo."],
+["Left Behind","Kate e Juliet ficam algemadas uma à outra na floresta, enquanto Sawyer é pressionado a ser mais simpático."],
+["One of Us","Juliet chega ao acampamento com Jack. O passado dela mostra a chegada à ilha."],
+["Catch-22","Desmond tem uma visão da morte de Charlie e tenta impedi-la. Uma paraquedista cai na ilha."],
+["D.O.C.","Juliet examina Sun numa estação médica da Dharma. Desmond e Charlie encontram a paraquedista ferida."],
+["The Brig","Locke leva Sawyer ao Black Rock para confrontar um homem do passado dos dois."],
+["The Man Behind the Curtain","Ben leva Locke para conhecer Jacob. O passado de Ben mostra como ele cresceu na Dharma."],
+["Greatest Hits","Charlie lista os cinco melhores momentos da vida antes de uma missão arriscada na estação Espelho."],
+["Through the Looking Glass (Part 1)","Os sobreviventes se preparam para o ataque dos Outros enquanto Charlie chega à estação submersa."],
+["Through the Looking Glass (Part 2)","Tudo converge na tentativa de contato com o barco. O final vira a série de cabeça para baixo."]],
+4:[
+["The Beginning of the End","Hurley aparece no futuro como um dos Seis de Oceanic. Na ilha, o grupo se divide entre Jack e Locke."],
+["Confirmed Dead","Chegam à ilha quatro pessoas do cargueiro: Daniel, Charlotte, Miles e Frank."],
+["The Economist","Sayid e Desmond vão de helicóptero ao cargueiro. No futuro, Sayid trabalha numa função inesperada."],
+["Eggtown","Kate enfrenta um julgamento no futuro e aparece com uma criança."],
+["The Constant","Desmond sofre com saltos de consciência no tempo e precisa encontrar uma âncora: Penny."],
+["The Other Woman","Juliet recebe uma visita de Harper, e Charlotte e Daniel vão até a estação Tempestade."],
+["Ji Yeon","Sun entra em trabalho de parto no futuro. No cargueiro, Sayid e Desmond encontram um rosto conhecido."],
+["Meet Kevin Johnson","Michael conta o que aconteceu com ele desde que deixou a ilha."],
+["The Shape of Things to Come","Os mercenários atacam a vila e Ben toma uma decisão radical."],
+["Something Nice Back Home","Jack precisa de uma cirurgia de emergência. No futuro, a vida dele com Kate desmorona."],
+["Cabin Fever","Locke vai atrás da cabana de Jacob, e o passado dele mostra visitas misteriosas desde o nascimento."],
+["There's No Place Like Home (Part 1)","Os Seis de Oceanic voltam para casa. Na ilha, começa a corrida até o helicóptero."],
+["There's No Place Like Home (Part 2)","O helicóptero, o cargueiro e a estação Orquídea: cada grupo tenta sair ou proteger a ilha."],
+["There's No Place Like Home (Part 3)","Ben faz a ilha desaparecer e, no futuro, Jack descobre quem está no caixão."]],
+5:[
+["Because You Left","A ilha começa a pular no tempo. Fora dela, Ben inicia o plano para levar os Seis de volta."],
+["The Lie","Hurley decide contar a verdade à mãe. Na ilha, Sawyer e os outros são atacados com flechas de fogo."],
+["Jughead","Desmond procura a mãe de Daniel. Na ilha, o grupo encontra os Outros em 1954 e uma bomba."],
+["The Little Prince","Kate é pressionada por causa de Aaron. Na ilha, um salto leva o grupo à noite do nascimento de Aaron."],
+["This Place Is Death","Jin encontra a equipe francesa de Rousseau no passado. Locke desce até a roda da ilha."],
+["316","Os Seis se preparam para voltar e embarcam no voo 316 da Ajira."],
+["The Life and Death of Jeremy Bentham","A jornada de Locke fora da ilha tentando convencer os Seis a voltar."],
+["LaFleur","Sawyer e os que ficaram na ilha vivem três anos na Iniciativa Dharma, em 1977."],
+["Namaste","Jack, Kate e Hurley chegam em 1977 e precisam se infiltrar na Dharma."],
+["He's Our You","Sayid, preso pela Dharma, encontra o jovem Ben e toma uma decisão drástica."],
+["Whatever Happened, Happened","Kate e Juliet tentam salvar o menino Ben levando-o até os Outros."],
+["Dead Is Dead","Ben volta ao Templo para ser julgado pelo que fez à ilha."],
+["Some Like It Hoth","Miles vigia um carregamento misterioso e conhece o pai, o Dr. Chang."],
+["The Variable","Daniel volta de Ann Arbor com um plano para mudar o que aconteceu."],
+["Follow the Leader","Jack decide detonar a bomba, e Locke lidera os Outros até Jacob."],
+["The Incident (Part 1)","Conhecemos Jacob e um homem de preto na praia. O plano de Jack enfrenta resistência de Sawyer e Juliet."],
+["The Incident (Part 2)","Na estátua, Ben encontra Jacob. No local da Cisne, a bomba entra em ação."]],
+6:[
+["LA X (Part 1)","O voo 815 pousa em Los Angeles numa outra realidade. Na ilha, o grupo leva Sayid ferido ao Templo."],
+["LA X (Part 2)","No Templo, os Outros tentam salvar Sayid. Na estátua, o grupo de Ben descobre o que Locke virou."],
+["What Kate Does","Kate foge em Los Angeles. Na ilha, Sayid é testado e Claire reaparece mudada."],
+["The Substitute","O falso Locke tenta recrutar Sawyer e mostra uma caverna cheia de nomes."],
+["Lighthouse","Jack e Hurley vão a um farol a pedido de Jacob."],
+["Sundown","Sayid recebe uma oferta e precisa escolher um lado."],
+["Dr. Linus","Ben é professor na outra realidade. Na ilha, Ilana descobre o que Ben fez com Jacob."],
+["Recon","Sawyer faz jogo duplo entre o falso Locke e Widmore."],
+["Ab Aeterno","A história de Richard Alpert, desde 1867, e como ele chegou à ilha."],
+["The Package","Sun e Jin quase se reencontram, e Widmore revela o que trouxe no submarino."],
+["Happily Ever After","Desmond passa por um experimento e enxerga a outra realidade."],
+["Everybody Loves Hugo","Hurley assume a liderança depois de ouvir Michael."],
+["The Last Recruit","Os grupos se juntam e se separam, e alianças são colocadas à prova."],
+["The Candidate","O grupo tenta escapar no submarino e paga um preço alto."],
+["Across the Sea","A origem de Jacob e do irmão, contada desde o nascimento."],
+["What They Died For","Jacob explica a missão aos candidatos, e alguém aceita a tarefa."],
+["The End (Part 1)","Jack e o falso Locke vão juntos ao coração da ilha."],
+["The End (Part 2)","As duas realidades se encontram. Fim da jornada."]]
+};
+
+/* Monta episódios e sessões (2 por semana, quintas, pula 24/12 e 31/12/2026) */
+const EPS=[];
+for(let s=1;s<=6;s++) SEASONS[s].forEach(([t,syn],i)=>EPS.push({id:`s${s}e${String(i+1).padStart(2,"0")}`,s,e:i+1,t,syn}));
+const groups=[];
+for(let i=0;i<118;i+=2) groups.push([EPS[i],EPS[i+1]]);
+groups.push([EPS[118]],[EPS[119],EPS[120]]);
+const skip=new Set(["2026-11-24","2026-11-31"]); // mês 0-based: dezembro = 11
+const SESSIONS=[]; let d=new Date(2026,9,1);
+while(SESSIONS.length<groups.length){
+  const k=`${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  if(!skip.has(k)) SESSIONS.push({n:SESSIONS.length+1,date:new Date(d),eps:groups[SESSIONS.length]});
+  d.setDate(d.getDate()+7);
+}
+const fmt=dt=>dt.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"});
+const code=e=>`S${e.s}E${String(e.e).padStart(2,"0")}`;
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ============================================================
+   ESTADO + SINCRONIZAÇÃO
+   ============================================================ */
+const LS=(k,v)=>{try{if(v===undefined)return JSON.parse(localStorage.getItem(k));localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+let data={};                      // { epId: { nome: {seen, comment, at} } }
+let me=LS("lost_me"); if(!PARTICIPANTS.includes(me)) me=null;
+let view={season:0,syn:LS("lost_syn")??true,todo:false};
+const DB=FIREBASE_DB_URL.replace(/\/+$/,"");
+
+function setSync(cls,txt){const el=document.getElementById("sync");el.className="sync "+cls;document.getElementById("syncTxt").textContent=txt}
+
+function applyAt(path,val,merge){
+  const parts=path.split("/").filter(Boolean);
+  if(!parts.length){ if(merge) Object.assign(data,val||{}); else data=val||{}; return; }
+  let o=data; for(let i=0;i<parts.length-1;i++){o[parts[i]]=o[parts[i]]||{};o=o[parts[i]];}
+  const last=parts[parts.length-1];
+  if(merge){o[last]=Object.assign(o[last]||{},val)} else if(val===null) delete o[last]; else o[last]=val;
+}
+
+function connect(){
+  if(!DB){ data=LS("lost_data")||{}; setSync("local","Modo local: as marcações ficam só neste aparelho. Configure o Firebase para compartilhar com o grupo."); refreshAll(); return; }
+  const es=new EventSource(`${DB}/lost.json`);
+  const handle=(ev,merge)=>{const m=JSON.parse(ev.data); if(!m) return;
+    if(merge) for(const [k,v] of Object.entries(m.data||{})) applyAt(m.path+"/"+k,v,false);
+    else applyAt(m.path,m.data,false);
+    setSync("on","Sincronizado com o grupo"); refreshAll(); };
+  es.addEventListener("put",e=>handle(e,false));
+  es.addEventListener("patch",e=>handle(e,true));
+  es.onerror=()=>setSync("err","Sem conexão com o banco. Tentando de novo…");
+}
+
+async function save(epId,patch){
+  if(!me) return;
+  data[epId]=data[epId]||{}; data[epId][me]=Object.assign(data[epId][me]||{},patch,{at:Date.now()});
+  refreshEp(epId); renderProgress();
+  if(!DB){ LS("lost_data",data); return true; }
+  try{
+    const r=await fetch(`${DB}/lost/${epId}/${encodeURIComponent(me)}.json`,{method:"PATCH",body:JSON.stringify({...patch,at:Date.now()})});
+    if(!r.ok) throw 0; return true;
+  }catch(e){ setSync("err","Não foi possível salvar. Verifique a conexão e as regras do Firebase."); return false; }
+}
+
+/* ============================================================
+   INTERFACE
+   ============================================================ */
+const $=id=>document.getElementById(id);
+
+function renderWho(){
+  $("who").innerHTML=PARTICIPANTS.map(p=>`<button aria-pressed="${p===me}" data-p="${esc(p)}">${esc(p)}</button>`).join("");
+  $("who").querySelectorAll("button").forEach(b=>b.onclick=()=>{me=b.dataset.p;LS("lost_me",me);renderWho();renderList();renderProgress();});
+}
+
+function renderProgress(){
+  $("progress").innerHTML=PARTICIPANTS.map(p=>{
+    const n=EPS.filter(e=>data[e.id]?.[p]?.seen).length;
+    return `<div class="pbar ${p===me?"me":""}"><div class="row">${esc(p)}<small>${n} de 121</small></div><div class="track"><div class="fill" style="width:${n/121*100}%"></div></div></div>`;
+  }).join("");
+}
+
+function renderSeasons(){
+  const opts=[[0,"Todas"],[1,"T1"],[2,"T2"],[3,"T3"],[4,"T4"],[5,"T5"],[6,"T6"]];
+  $("seasons").innerHTML=opts.map(([v,l])=>`<button class="chip" aria-pressed="${view.season===v}" data-s="${v}">${l}</button>`).join("");
+  $("seasons").querySelectorAll("button").forEach(b=>b.onclick=()=>{view.season=+b.dataset.s;renderSeasons();renderList();});
+}
+
+function nextSession(){const t=new Date();t.setHours(0,0,0,0);return SESSIONS.find(s=>s.date>=t)||SESSIONS[SESSIONS.length-1];}
+
+function epHTML(e){
+  return `<article class="ep" id="${e.id}">
+    <div class="ep-top"><span class="code">${code(e)}</span><h3 class="title">${esc(e.t)}</h3></div>
+    <p class="syn ${view.syn?"":"hidden"}" title="${view.syn?"":"Toque para ler a sinopse"}">${esc(e.syn)}</p>
+    <div class="people"></div>
+    <div class="comments"></div>
+  </article>`;
+}
+
+function renderList(){
+  const nxt=nextSession(); let html=""; let lastSeason=0; let count=0;
+  for(const s of SESSIONS){
+    let eps=s.eps;
+    if(view.season) eps=eps.filter(e=>e.s===view.season);
+    if(view.todo&&me) eps=eps.filter(e=>!data[e.id]?.[me]?.seen);
+    if(!eps.length) continue;
+    const sn=eps[0].s;
+    if(sn!==lastSeason){lastSeason=sn;html+=`<h2 class="season-h">Temporada ${sn}<small>${SEASONS[sn].length} episódios</small></h2>`;}
+    html+=`<section class="ticket ${s===nxt?"next":""}" id="sess${s.n}">
+      <div class="stub"><div class="lbl">${s===nxt?"Próxima":"Sessão"}</div><div class="n">${String(s.n).padStart(2,"0")}</div><div class="d">${fmt(s.date)}</div><div class="y">${s.date.getFullYear()}</div></div>
+      <div class="eps">${eps.map(epHTML).join("")}</div></section>`;
+    count++;
+  }
+  $("list").innerHTML=count?html:`<div class="empty">${view.todo?"Você está em dia com tudo desta seleção.":"Nada para mostrar aqui."}</div>`;
+  $("list").querySelectorAll(".syn.hidden").forEach(p=>p.onclick=()=>{p.classList.remove("hidden");p.removeAttribute("title")});
+  EPS.forEach(e=>{ if(document.getElementById(e.id)) refreshEp(e.id); });
+}
+
+function refreshEp(id){
+  const el=document.getElementById(id); if(!el) return;
+  const st=data[id]||{};
+  el.querySelector(".people").innerHTML=PARTICIPANTS.map(p=>{
+    const seen=!!st[p]?.seen, mine=p===me;
+    const inner=`<span class="box">${seen?"✓":""}</span>${esc(p)}${mine?` <span class="you">(você)</span>`:""}`;
+    return mine
+      ? `<button class="pill mine ${seen?"seen":""}" data-toggle aria-pressed="${seen}" aria-label="Marcar ${esc(e(id).t)} como ${seen?"não visto":"visto"}">${inner}</button>`
+      : `<span class="pill ${seen?"seen":""}" aria-label="${esc(p)}: ${seen?"visto":"não visto"}">${inner}</span>`;
+  }).join("");
+  const tg=el.querySelector("[data-toggle]"); if(tg) tg.onclick=()=>save(id,{seen:!st[me]?.seen});
+
+  const box=el.querySelector(".comments");
+  const others=PARTICIPANTS.filter(p=>p!==me&&st[p]?.comment).map(p=>`<div class="cmt"><b>${esc(p)}</b>${esc(st[p].comment)}</div>`).join("");
+  let ta=box.querySelector("textarea");
+  const focused=ta&&document.activeElement===ta;
+  if(focused){ box.querySelectorAll(".cmt").forEach(c=>c.remove()); box.insertAdjacentHTML("afterbegin",others); return; }
+  box.innerHTML=others+(me?`<textarea class="mycmt" rows="1" placeholder="Seu comentário sobre o episódio" aria-label="Seu comentário"></textarea><div class="saved"></div>`:"");
+  ta=box.querySelector("textarea");
+  if(ta){
+    ta.value=st[me]?.comment||"";
+    let timer;
+    const commit=async()=>{clearTimeout(timer); const v=ta.value.trim(); if(v===(data[id]?.[me]?.comment||"")) return;
+      const ok=await save(id,{comment:v}); const s=box.querySelector(".saved"); if(s){s.textContent=ok?"Comentário salvo":"";setTimeout(()=>s.textContent="",2000);} };
+    ta.oninput=()=>{clearTimeout(timer);timer=setTimeout(commit,1200)};
+    ta.onblur=commit;
+  }
+}
+const e=id=>EPS.find(x=>x.id===id);
+
+function refreshAll(){ renderProgress(); EPS.forEach(x=>refreshEp(x.id)); }
+
+$("optSyn").setAttribute("aria-pressed",view.syn);
+$("optSyn").onclick=()=>{view.syn=!view.syn;LS("lost_syn",view.syn);$("optSyn").setAttribute("aria-pressed",view.syn);$("optSyn").textContent=view.syn?"Sinopses visíveis":"Sinopses ocultas";renderList();};
+$("optSyn").textContent=view.syn?"Sinopses visíveis":"Sinopses ocultas";
+$("optTodo").onclick=()=>{ if(!me){alert("Escolha quem você é no topo da página.");return;} view.todo=!view.todo;$("optTodo").setAttribute("aria-pressed",view.todo);renderList();};
+$("optNext").onclick=()=>{ if(view.season||view.todo){view.season=0;view.todo=false;$("optTodo").setAttribute("aria-pressed",false);renderSeasons();renderList();}
+  document.getElementById("sess"+nextSession().n)?.scrollIntoView({behavior:"smooth",block:"start"}); };
+
+renderWho(); renderSeasons(); renderProgress(); renderList(); connect();
+</script>
+</body>
+</html>
