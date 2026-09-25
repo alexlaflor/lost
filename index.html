@@ -20,7 +20,7 @@
   // URL do Realtime Database do Firebase (veja o README).
   // Deixe vazio para usar só neste aparelho (sem compartilhar).
   const FIREBASE_DB_URL = "https://lost-254e3-default-rtdb.firebaseio.com/";
-</script>
+   </script>
 <style>
 :root{
   --ocean:#0B3C5D; --ocean-2:#12507A; --sky:#EEF4F7; --paper:#FFFFFF;
@@ -30,7 +30,7 @@
 }
 *{box-sizing:border-box}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 170px)}
 body{margin:0;background:var(--sky);color:var(--ink);font-family:var(--display);font-size:17px;-webkit-font-smoothing:antialiased}
 button,textarea{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -39,14 +39,15 @@ button{cursor:pointer}
 
 /* Hero */
 header.hero{background:var(--ocean);color:#fff;position:relative;overflow:hidden}
-header.hero .wrap{padding-top:28px;padding-bottom:22px;position:relative}
+header.hero .wrap{padding-top:28px;padding-bottom:24px;position:relative}
 .wordmark{font-weight:800;font-size:clamp(72px,18vw,150px);letter-spacing:.14em;line-height:.9;margin:0}
 .flight{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-weight:600;font-size:18px;color:#BFD4E2}
 .flight b{color:#fff;font-weight:700}
 .numbers{position:absolute;right:16px;top:30px;font-weight:700;color:var(--sand);letter-spacing:.2em;font-size:15px}
 .stripe{height:6px;background:linear-gradient(90deg,var(--red) 0 33%,var(--ocean-2) 33% 66%,var(--sand) 66%)}
 
-.who{margin-top:20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.whobar{background:var(--ocean);border-bottom:3px solid var(--red)}
+.who{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px;padding-bottom:8px}
 .who span{color:#BFD4E2;font-weight:600}
 .seg{display:inline-flex;background:rgba(255,255,255,.1);border-radius:999px;padding:3px}
 .seg button{border:0;background:none;color:#fff;padding:7px 16px;border-radius:999px;font-weight:700;font-size:16px}
@@ -62,8 +63,8 @@ header.hero .wrap{padding-top:28px;padding-bottom:22px;position:relative}
 .pbar.me .fill{background:var(--red)}
 
 /* Barra de filtros */
-.toolbar{position:sticky;top:0;z-index:5;background:rgba(238,244,247,.96);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
-.toolbar .wrap{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-top:10px;padding-bottom:10px}
+.toolbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:rgba(238,244,247,.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.toolbar > .wrap{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;padding-top:8px;padding-bottom:8px}
 .chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;max-width:100%}
 .chips::-webkit-scrollbar{display:none}
 .chip{border:1.5px solid var(--line);background:var(--paper);padding:5px 12px;border-radius:6px;font-weight:700;font-size:15px;white-space:nowrap}
@@ -119,6 +120,33 @@ button.pill{background:var(--paper)}
 .mycmt:focus{border-color:var(--ocean-2);outline:none}
 .saved{font-size:13px;color:var(--jungle);font-weight:600;height:16px}
 .empty{background:var(--paper);border-radius:10px;padding:28px;text-align:center;font-weight:600;color:var(--muted)}
+.avg{margin-left:auto;font-weight:700;font-size:15px;color:var(--ocean);background:var(--sand);border-radius:6px;padding:2px 8px;white-space:nowrap}
+.avg:empty{display:none}
+.sc{display:inline-block;min-width:26px;text-align:center;font-family:var(--display);font-weight:800;font-size:14px;color:#fff;border-radius:5px;padding:1px 6px;margin-right:8px;vertical-align:1px}
+.myrow{display:flex;gap:8px;align-items:stretch}
+.myrow .mycmt{flex:1}
+.rate{flex:none;width:74px;border:1.5px dashed var(--ocean-2);background:#fff;border-radius:8px;color:var(--ocean-2);font-weight:700;font-size:14px;line-height:1.1;padding:4px}
+.rate.has{border-style:solid;color:#fff;font-size:24px;font-weight:800}
+.rate small{display:block;font-size:12px;font-weight:600;opacity:.85}
+
+dialog.rater{border:0;border-radius:14px;padding:0;width:min(92vw,380px);color:var(--ink);box-shadow:0 20px 60px rgba(11,60,93,.35)}
+dialog.rater::backdrop{background:rgba(11,60,93,.55)}
+.rater .hd{background:var(--ocean);color:#fff;padding:14px 18px}
+.rater .hd .code{color:#FFB3BE}
+.rater .hd h3{margin:2px 0 0;font-size:22px;line-height:1.1}
+.rater .bd{padding:20px 18px 18px;text-align:center}
+.big{font-weight:800;font-size:84px;line-height:1;transition:color .15s}
+.big small{font-size:24px;color:var(--muted);font-weight:700}
+.verdict{font-weight:700;color:var(--muted);height:22px;margin:4px 0 14px}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--c,#2E9E5B) var(--p,50%),var(--line) var(--p,50%));outline-offset:6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:30px;height:30px;border-radius:50%;background:#fff;border:3px solid var(--c,#2E9E5B);box-shadow:0 2px 6px rgba(0,0,0,.2);cursor:grab}
+input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--c,#2E9E5B);cursor:grab}
+.ticks{display:flex;justify-content:space-between;font-weight:700;font-size:13px;color:var(--muted);margin-top:8px;padding:0 4px}
+.rater .ft{display:flex;gap:8px;padding:0 18px 18px}
+.rater .ft button{flex:1;border-radius:8px;padding:11px;font-weight:700;font-size:17px;border:1.5px solid var(--line);background:#fff}
+.rater .ft .primary{background:var(--red);border-color:var(--red);color:#fff;flex:1.4}
+.rater .ft .ghost{border:0;color:var(--muted);flex:.8}
+
 footer{text-align:center;color:var(--muted);font-size:14px;font-weight:600;padding:0 16px 40px}
 
 @media (max-width:520px){
@@ -138,7 +166,6 @@ footer{text-align:center;color:var(--muted);font-size:14px;font-weight:600;paddi
     <div class="numbers" aria-hidden="true">4 8 15 16 23 42</div>
     <h1 class="wordmark">LOST</h1>
     <div class="flight"><span>Oceanic <b>815</b></span><span><b>121</b> episódios</span><span>quintas-feiras, 2 por semana</span><span>até <b>09/12/2027</b></span></div>
-    <div class="who"><span>Quem está marcando?</span><div class="seg" id="who" role="group" aria-label="Quem é você"></div></div>
   </div>
   <div class="stripe"></div>
 </header>
@@ -146,6 +173,7 @@ footer{text-align:center;color:var(--muted);font-size:14px;font-weight:600;paddi
 <section class="progress" aria-label="Progresso"><div class="wrap" id="progress"></div></section>
 
 <nav class="toolbar" aria-label="Filtros">
+  <div class="whobar"><div class="wrap who"><span>Marcando como</span><div class="seg" id="who" role="group" aria-label="Quem é você"></div></div></div>
   <div class="wrap">
     <div class="chips" id="seasons"></div>
     <div class="opts">
@@ -158,6 +186,20 @@ footer{text-align:center;color:var(--muted);font-size:14px;font-weight:600;paddi
 
 <div class="wrap"><div class="sync" id="sync"><span class="dot"></span><span id="syncTxt">Conectando…</span></div></div>
 <main class="wrap" id="list"></main>
+<dialog class="rater" id="rater" aria-labelledby="rtTitle">
+  <div class="hd"><span class="code" id="rtCode"></span><h3 id="rtTitle"></h3></div>
+  <div class="bd">
+    <div class="big" id="rtBig">7<small>/10</small></div>
+    <div class="verdict" id="rtVerdict"></div>
+    <input type="range" id="rtRange" min="0" max="10" step="1" value="7" aria-label="Nota de 0 a 10">
+    <div class="ticks"><span>0</span><span>5</span><span>10</span></div>
+  </div>
+  <div class="ft">
+    <button class="ghost" id="rtClear">Remover nota</button>
+    <button id="rtCancel">Cancelar</button>
+    <button class="primary" id="rtSave">Salvar nota</button>
+  </div>
+</dialog>
 <footer>Namaste. Marque só depois de assistir.</footer>
 
 <script>
@@ -380,7 +422,7 @@ function nextSession(){const t=new Date();t.setHours(0,0,0,0);return SESSIONS.fi
 
 function epHTML(e){
   return `<article class="ep" id="${e.id}">
-    <div class="ep-top"><span class="code">${code(e)}</span><h3 class="title">${esc(e.t)}</h3></div>
+    <div class="ep-top"><span class="code">${code(e)}</span><h3 class="title">${esc(e.t)}</h3><span class="avg"></span></div>
     <p class="syn ${view.syn?"":"hidden"}" title="${view.syn?"":"Toque para ler a sinopse"}">${esc(e.syn)}</p>
     <div class="people"></div>
     <div class="comments"></div>
@@ -416,14 +458,19 @@ function refreshEp(id){
       ? `<button class="pill mine ${seen?"seen":""}" data-toggle aria-pressed="${seen}" aria-label="Marcar ${esc(e(id).t)} como ${seen?"não visto":"visto"}">${inner}</button>`
       : `<span class="pill ${seen?"seen":""}" aria-label="${esc(p)}: ${seen?"visto":"não visto"}">${inner}</span>`;
   }).join("");
-  const tg=el.querySelector("[data-toggle]"); if(tg) tg.onclick=()=>save(id,{seen:!st[me]?.seen});
+  const tg=el.querySelector("[data-toggle]"); if(tg) tg.onclick=async()=>{const now=!st[me]?.seen; await save(id,{seen:now}); if(now&&!isNum(data[id]?.[me]?.score)) openRater(id);};
+  const sc=PARTICIPANTS.map(p=>st[p]?.score).filter(isNum);
+  el.querySelector(".avg").textContent=sc.length?`Média ${fmtN(sc.reduce((a,b)=>a+b,0)/sc.length)}`:"";
 
   const box=el.querySelector(".comments");
-  const others=PARTICIPANTS.filter(p=>p!==me&&st[p]?.comment).map(p=>`<div class="cmt"><b>${esc(p)}</b>${esc(st[p].comment)}</div>`).join("");
+  const others=PARTICIPANTS.filter(p=>p!==me&&(st[p]?.comment||isNum(st[p]?.score))).map(p=>`<div class="cmt"><b>${esc(p)}</b>${isNum(st[p].score)?`<span class="sc" style="background:${scoreColor(st[p].score)}">${st[p].score}</span>`:""}${esc(st[p].comment||"")}</div>`).join("");
+  const myScore=st[me]?.score;
+  const rateBtn=isNum(myScore)?`<button class="rate has" style="background:${scoreColor(myScore)};border-color:${scoreColor(myScore)}" aria-label="Sua nota: ${myScore}. Alterar">${myScore}<small>sua nota</small></button>`:`<button class="rate" aria-label="Dar nota">Dar<br>nota</button>`;
   let ta=box.querySelector("textarea");
   const focused=ta&&document.activeElement===ta;
-  if(focused){ box.querySelectorAll(".cmt").forEach(c=>c.remove()); box.insertAdjacentHTML("afterbegin",others); return; }
-  box.innerHTML=others+(me?`<textarea class="mycmt" rows="1" placeholder="Seu comentário sobre o episódio" aria-label="Seu comentário"></textarea><div class="saved"></div>`:"");
+  if(focused){ box.querySelectorAll(".cmt").forEach(c=>c.remove()); box.insertAdjacentHTML("afterbegin",others); const rb=box.querySelector(".rate"); rb.outerHTML=rateBtn; box.querySelector(".rate").onclick=()=>openRater(id); return; }
+  box.innerHTML=others+(me?`<div class="myrow"><textarea class="mycmt" rows="2" placeholder="Seu comentário sobre o episódio" aria-label="Seu comentário"></textarea>${rateBtn}</div><div class="saved"></div>`:"");
+  const rb=box.querySelector(".rate"); if(rb) rb.onclick=()=>openRater(id);
   ta=box.querySelector("textarea");
   if(ta){
     ta.value=st[me]?.comment||"";
@@ -435,6 +482,25 @@ function refreshEp(id){
   }
 }
 const e=id=>EPS.find(x=>x.id===id);
+
+const isNum=v=>typeof v==="number"&&!isNaN(v);
+const fmtN=v=>v.toLocaleString("pt-BR",{maximumFractionDigits:1});
+const scoreColor=v=>`hsl(${Math.round(v*12)},62%,${v>=5?36:44}%)`;
+const VERDICTS=["Pior episódio da série","Muito ruim","Ruim","Fraco","Abaixo da média","Ok","Bom","Muito bom","Ótimo","Excelente","Obra-prima"];
+let rateFor=null;
+function paintRange(){const r=$("rtRange"),v=+r.value,c=scoreColor(v);
+  r.style.setProperty("--p",v*10+"%");r.style.setProperty("--c",c);
+  $("rtBig").innerHTML=`${v}<small>/10</small>`;$("rtBig").style.color=c;$("rtVerdict").textContent=VERDICTS[v];}
+function openRater(id){ if(!me){alert("Escolha quem você é no topo da página.");return;}
+  rateFor=id; const ep=e(id), cur=data[id]?.[me]?.score;
+  $("rtCode").textContent=code(ep); $("rtTitle").textContent=ep.t;
+  $("rtRange").value=isNum(cur)?cur:7; $("rtClear").style.visibility=isNum(cur)?"visible":"hidden";
+  paintRange(); $("rater").showModal(); $("rtRange").focus(); }
+$("rtRange").oninput=paintRange;
+$("rtSave").onclick=()=>{save(rateFor,{score:+$("rtRange").value});$("rater").close();};
+$("rtClear").onclick=()=>{save(rateFor,{score:null});$("rater").close();};
+$("rtCancel").onclick=()=>$("rater").close();
+$("rater").addEventListener("click",ev=>{if(ev.target===$("rater"))$("rater").close();});
 
 function refreshAll(){ renderProgress(); EPS.forEach(x=>refreshEp(x.id)); }
 
